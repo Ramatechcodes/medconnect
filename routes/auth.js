@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const LicenseVerification = require('../models/LicenseVerification');
 const { sendVerificationCode } = require('../utils/sendEmail');
 const { PUBLIC_ROLES, PROVIDER_ROLES } = require('../utils/roles');
 
@@ -24,6 +25,7 @@ function publicUser(user) {
     address: user.address,
     specialty: user.specialty,
     licenseNumber: user.licenseNumber,
+    isLicenseVerified: user.isLicenseVerified,
     yearsOfExperience: user.yearsOfExperience,
     bio: user.bio,
     isAvailable: user.isAvailable,
@@ -42,6 +44,33 @@ function hashCode(code) {
   return crypto.createHash('sha256').update(code).digest('hex');
 }
 
+// ---------------- VERIFY LICENSE VIA WHATSAPP CODE (pre-registration) ----------------
+router.post('/verify-license', async (req, res) => {
+  try {
+    const { phone, code } = req.body;
+    if (!phone || !code) return res.status(400).json({ message: 'Phone and code are required' });
+
+    const record = await LicenseVerification.findOne({ phone: phone.trim(), consumed: false }).sort('-createdAt');
+    if (!record) {
+      return res.status(404).json({ message: 'No verification code found for this phone number yet. Send the WhatsApp message first and wait for your code.' });
+    }
+    if (record.expiresAt < Date.now()) {
+      return res.status(400).json({ message: 'This code has expired. Please request a new one via WhatsApp.' });
+    }
+    if (hashCode(code) !== record.codeHash) {
+      return res.status(400).json({ message: 'Incorrect code. Please check and try again.' });
+    }
+
+    record.verifiedAt = new Date();
+    await record.save();
+
+    res.json({ message: 'License verified! You can now complete registration.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error during license verification' });
+  }
+});
+
 // ---------------- REGISTER ----------------
 router.post('/register', async (req, res) => {
   try {
@@ -57,8 +86,22 @@ router.post('/register', async (req, res) => {
     if (!PUBLIC_ROLES.includes(role)) {
       return res.status(400).json({ message: 'Invalid role' });
     }
-    if (PROVIDER_ROLES.includes(role) && !licenseNumber) {
-      return res.status(400).json({ message: 'License number is required for doctors, nurses, pharmacists, and lab technicians' });
+
+    let licenseRecord = null;
+    if (PROVIDER_ROLES.includes(role)) {
+      if (!licenseNumber) {
+        return res.status(400).json({ message: 'License number is required for doctors, nurses, pharmacists, and lab technicians' });
+      }
+      // Independent server-side re-check — never trust a client-side "verified" flag.
+      licenseRecord = await LicenseVerification.findOne({
+        phone: phone.trim(),
+        consumed: false,
+        verifiedAt: { $ne: null }
+      }).sort('-createdAt');
+
+      if (!licenseRecord || licenseRecord.expiresAt < Date.now()) {
+        return res.status(400).json({ message: 'Please verify your license via WhatsApp before completing registration' });
+      }
     }
 
     const existing = await User.findOne({ email: email.toLowerCase() });
@@ -76,11 +119,18 @@ router.post('/register', async (req, res) => {
       address,
       specialty: specialty || '',
       licenseNumber: licenseNumber || '',
+      isLicenseVerified: !!licenseRecord,
+      licenseVerifiedAt: licenseRecord ? licenseRecord.verifiedAt : undefined,
       yearsOfExperience: yearsOfExperience || 0,
       bio: bio || '',
       verificationCodeHash: hashCode(code),
       verificationCodeExpires: Date.now() + 15 * 60 * 1000 // 15 minutes
     });
+
+    if (licenseRecord) {
+      licenseRecord.consumed = true;
+      await licenseRecord.save();
+    }
 
     await sendVerificationCode(user.email, code);
 

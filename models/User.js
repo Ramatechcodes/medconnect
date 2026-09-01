@@ -24,7 +24,8 @@ const userSchema = new mongoose.Schema(
     isVerified: { type: Boolean, default: false },
     verificationCodeHash: { type: String },
     verificationCodeExpires: { type: Date },
-
+isLicenseVerified: { type: Boolean, default: false },
+licenseVerifiedAt: { type: Date },
     // Admin moderation
     isBanned: { type: Boolean, default: false },
     banReason: { type: String, default: '' },

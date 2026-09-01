@@ -205,7 +205,17 @@ async function handleUserAction(btn) {
 document.getElementById('userSearchBtn').addEventListener('click', loadUsers);
 document.getElementById('userRoleFilter').addEventListener('change', loadUsers);
 document.getElementById('userSearch').addEventListener('keydown', (e) => { if (e.key === 'Enter') loadUsers(); });
-
+document.getElementById('generateLicenseCodeBtn').addEventListener('click', async () => {
+  const phone = document.getElementById('licenseCodePhone').value.trim();
+  const resultBox = document.getElementById('licenseCodeResult');
+  if (!phone) { resultBox.innerHTML = '<span style="color:#dc2626">Enter a phone number first.</span>'; return; }
+  try {
+    const data = await apiRequest('/admin/license-codes', { method: 'POST', body: { phone } });
+    resultBox.innerHTML = `✅ Code: <span style="font-size:22px;letter-spacing:3px">${data.code}</span> (valid ${data.expiresInMinutes} min) — send this to ${phone} via WhatsApp`;
+  } catch (err) {
+    resultBox.innerHTML = `<span style="color:#dc2626">${err.message}</span>`;
+  }
+});
 // ---------------- REQUESTS / ACTIVITY LOG ----------------
 async function loadRequests() {
   const status = document.getElementById('requestStatusFilter').value;

@@ -5,6 +5,8 @@ const MedicalRecord = require('../models/MedicalRecord');
 const auth = require('../middleware/auth');
 const adminOnly = require('../middleware/adminOnly');
 const { ALL_ROLES, PROVIDER_ROLES } = require('../utils/roles');
+const crypto = require('crypto');
+const LicenseVerification = require('../models/LicenseVerification');
 
 const router = express.Router();
 
@@ -14,7 +16,42 @@ router.use(auth, adminOnly);
 const SAFE_FIELDS = '-password -verificationCodeHash -verificationCodeExpires';
 const REQUEST_DETAIL_FIELDS =
   'fullName email phone address role specialty licenseNumber yearsOfExperience isBanned isRestricted location';
+// ---------------- GENERATE LICENSE VERIFICATION CODE ----------------
+// Admin manually verifies the provider's answers over WhatsApp first,
+// then generates a code here and sends it back to them via WhatsApp.
+router.post('/license-codes', async (req, res) => {
+  try {
+    const { phone, role, fullName } = req.body;
+    if (!phone) return res.status(400).json({ message: 'Phone number is required' });
 
+    const cleanPhone = phone.trim();
+    const code = Math.floor(10000000 + Math.random() * 90000000).toString(); // 8 digits
+    const codeHash = crypto.createHash('sha256').update(code).digest('hex');
+
+    await LicenseVerification.findOneAndUpdate(
+      { phone: cleanPhone, consumed: false },
+      {
+        phone: cleanPhone,
+        role: role || '',
+        fullName: fullName || '',
+        codeHash,
+        expiresAt: Date.now() + 30 * 60 * 1000, // 30 minutes
+        verifiedAt: null,
+        consumed: false
+      },
+      { upsert: true, setDefaultsOnInsert: true }
+    );
+
+    res.json({
+      message: 'Code generated. Send this to the provider via WhatsApp.',
+      code,
+      expiresInMinutes: 30
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Could not generate code' });
+  }
+});
 // ---------------- STATS (for dashboard cards) ----------------
 router.get('/stats', async (req, res) => {
   const [

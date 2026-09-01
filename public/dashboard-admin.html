@@ -30,6 +30,13 @@
     <!-- OVERVIEW -->
     <div class="tab-panel active" id="tab-overview">
       <div class="stat-grid" id="statGrid"></div>
+      <div class="card" style="max-width:480px;margin-bottom:16px">
+  <h3>Generate License Verification Code</h3>
+  <p style="font-size:13px;color:var(--muted)">After verifying a provider's answers over WhatsApp, generate an 8-digit code and send it back to them so they can finish registering.</p>
+  <div class="field"><label>Provider's Phone Number</label><input type="tel" id="licenseCodePhone" placeholder="e.g. 2348012345678"></div>
+  <button class="btn btn-primary" id="generateLicenseCodeBtn">Generate Code</button>
+  <div id="licenseCodeResult" style="margin-top:10px;font-weight:700"></div>
+</div>
     </div>
 
     <!-- LIVE TRIPS -->
