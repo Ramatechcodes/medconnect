@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nurse Dashboard — QuickMed</title>
+<link rel="stylesheet" href="/css/style.css?v=2">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <div class="top-bar">
+    <div class="logo">🩺 QuickMed</div>
+    <div class="user-chip" id="userChip"></div>
+    <button class="btn btn-outline" id="logoutBtn">Logout</button>
+  </div>
+
+  <div class="dash-layout">
+    <div class="sidebar">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="home">Home</button>
+        <button class="tab-btn" data-tab="history">History</button>
+        <button class="tab-btn" data-tab="records">Records</button>
+        <button class="tab-btn" data-tab="settings">Settings</button>
+      </div>
+
+      <div class="tab-panel active" id="tab-home">
+        <div class="status-toggle">
+          <div>
+            <div style="font-weight:700">Go Online</div>
+            <div style="font-size:12px;color:var(--muted)">Share your location & receive requests</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="availabilityToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div id="alertBox"></div>
+
+        <div class="cover-search" id="coverSearch">
+          <h4>🔁 Need someone to cover you?</h4>
+          <select id="coverRoleSearch"></select>
+          <button class="btn btn-primary btn-block" id="coverSearchBtn">Search nearby providers</button>
+          <div id="coverResultsPanel"></div>
+        </div>
+
+        <div id="coverStatusPanel"></div>
+        <div id="tripPanel"></div>
+
+        <h3>Incoming requests</h3>
+        <div id="requestsPanel"><div class="empty-state">No requests yet. Go online to start receiving them.</div></div>
+      </div>
+
+      <div class="tab-panel" id="tab-history">
+        <h3><span style="cursor:pointer" id="historyToggle">🕐 History ▾</span></h3>
+        <div id="historyPanel" class="hidden"></div>
+      </div>
+
+      <div class="tab-panel" id="tab-records">
+        <h3>🩺 My Authored Records</h3>
+        <div id="recordsTabPanel"><div class="empty-state">Loading…</div></div>
+      </div>
+
+      <div class="tab-panel" id="tab-settings">
+        <h3>Profile</h3>
+        <div id="settingsAlert"></div>
+        <form id="profileForm">
+          <div class="field"><label>Full Name</label><input type="text" id="settingsName" required></div>
+          <div class="field"><label>Email</label><input type="email" id="settingsEmail" required></div>
+          <div class="field"><label>Phone</label><input type="tel" id="settingsPhone" required></div>
+          <div class="field"><label>Address</label><input type="text" id="settingsAddress" required></div>
+          <button type="submit" class="btn btn-primary btn-block">Save Profile</button>
+        </form>
+
+        <h3 style="margin-top:24px">Change Password</h3>
+        <form id="passwordForm">
+          <div class="field"><label>Current Password</label><input type="password" id="currentPassword" required></div>
+          <div class="field"><label>New Password</label><input type="password" id="newPassword" minlength="6" required></div>
+          <button type="submit" class="btn btn-primary btn-block">Update Password</button>
+        </form>
+
+        <h3 style="margin-top:24px">Appearance</h3>
+        <div class="status-toggle">
+          <div>
+            <div style="font-weight:700">Dark Mode</div>
+            <div style="font-size:12px;color:var(--muted)">Switch between light and dark theme</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="darkModeToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div id="map"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/api.js?v=2"></script>
+  <script>window.EXPECTED_ROLE = "nurse";</script>
+  <script src="/js/roles.js?v=2"></script>
+  <script src="/js/tracking-bar.js?v=2"></script>
+  <script src="/js/chat-widget.js?v=2"></script>
+  <script src="/js/records.js?v=2"></script>
+  <script src="/js/provider-dashboard.js?v=2"></script>
+  <script src="/js/dashboard-tabs.js?v=2"></script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+/* ===================================================================
+   QUICKMED LANDING PAGE — distinct identity, scoped to index.html only
+   Palette: deep clinical teal + warm ochre accent on a soft sand base
+   Type: Fraunces (display, warm/mature serif) + Inter (body/UI)
+   Signature: the "proximity ripple" — concentric rings from a pin,
+   echoing the actual product mechanic (finding the nearest care to you)
+=================================================================== */
+
+:root {
+  --qm-ink: #172420;
+  --qm-teal: #0B4D3C;
+  --qm-teal-deep: #08332A;
+  --qm-sand: #FAF6EE;
+  --qm-sand-dim: #F1EAD9;
+  --qm-ochre: #C97A2B;
+  --qm-ochre-deep: #A85F1B;
+  --qm-line: #E4DBC5;
+  --qm-muted: #5C6862;
+}
+
+.qm-body {
+  background: var(--qm-sand);
+  color: var(--qm-ink);
+  font-family: 'Inter', -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+.qm-serif { font-family: 'Fraunces', Georgia, serif; }
+.qm-mono { font-family: 'IBM Plex Mono', monospace; }
+
+/* ---------- NAV ---------- */
+.qm-nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 5%;
+  background: rgba(250, 246, 238, 0.82);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--qm-line);
+}
+.qm-logo {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 24px;
+  color: var(--qm-teal);
+  letter-spacing: -0.5px;
+}
+.qm-logo span { color: var(--qm-ochre); }
+.qm-nav-links { display: flex; align-items: center; gap: 28px; }
+.qm-nav-links a { color: var(--qm-ink); font-weight: 600; font-size: 15px; text-decoration: none; }
+.qm-nav-cta {
+  background: var(--qm-teal); color: #fff !important; padding: 10px 20px;
+  border-radius: 8px; font-size: 14px !important;
+}
+.qm-nav-cta:hover { background: var(--qm-teal-deep); }
+
+/* ---------- HERO ---------- */
+.qm-hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  gap: 40px;
+  padding: 80px 5% 60px;
+  max-width: 1360px;
+  margin: 0 auto;
+}
+.qm-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--qm-teal); margin-bottom: 22px; font-weight: 600;
+}
+.qm-eyebrow::before {
+  content: ''; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--qm-ochre); display: inline-block;
+  animation: qm-blink 1.8s ease-in-out infinite;
+}
+@keyframes qm-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.qm-hero h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: clamp(36px, 4.4vw, 58px);
+  line-height: 1.08;
+  letter-spacing: -1px;
+  margin: 0 0 22px;
+}
+.qm-hero h1 em { color: var(--qm-teal); font-style: italic; }
+
+.qm-hero p.lead {
+  font-size: 18px; line-height: 1.65; color: var(--qm-muted);
+  max-width: 520px; margin-bottom: 32px;
+}
+.qm-hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 36px; }
+.qm-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 26px; border-radius: 10px; font-weight: 700; font-size: 15px;
+  text-decoration: none; border: none; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease;
+}
+.qm-btn-primary { background: var(--qm-teal); color: #fff; }
+.qm-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(11,77,60,0.28); }
+.qm-btn-ghost { background: transparent; color: var(--qm-ink); border: 2px solid var(--qm-ink); }
+.qm-btn-ghost:hover { background: var(--qm-ink); color: var(--qm-sand); }
+
+.qm-trust-row {
+  display: flex; gap: 28px; flex-wrap: wrap;
+  font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--qm-muted);
+}
+.qm-trust-row span { display: flex; align-items: center; gap: 7px; }
+.qm-trust-row span::before { content: '✓'; color: var(--qm-teal); font-weight: 700; }
+
+/* ---------- SIGNATURE: proximity ripple ---------- */
+.qm-ripple-stage {
+  position: relative;
+  aspect-ratio: 1;
+  max-width: 460px;
+  margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
+}
+.qm-ring {
+  position: absolute;
+  border: 1.5px solid var(--qm-teal);
+  border-radius: 50%;
+  opacity: 0;
+  animation: qm-ripple 3.6s cubic-bezier(.2,.6,.4,1) infinite;
+}
+.qm-ring:nth-child(1) { width: 100%; height: 100%; animation-delay: 0s; }
+.qm-ring:nth-child(2) { width: 100%; height: 100%; animation-delay: 1.2s; }
+.qm-ring:nth-child(3) { width: 100%; height: 100%; animation-delay: 2.4s; }
+@keyframes qm-ripple {
+  0% { transform: scale(0.35); opacity: 0.9; border-color: var(--qm-ochre); }
+  70% { opacity: 0.15; }
+  100% { transform: scale(1); opacity: 0; border-color: var(--qm-teal); }
+}
+.qm-pin {
+  position: relative; z-index: 2;
+  width: 84px; height: 84px; border-radius: 50%;
+  background: var(--qm-teal);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 34px;
+  box-shadow: 0 16px 40px rgba(11,77,60,0.35);
+}
+.qm-card-float {
+  position: absolute;
+  background: #fff;
+  border: 1px solid var(--qm-line);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  box-shadow: 0 10px 26px rgba(23,36,32,0.1);
+  display: flex; align-items: center; gap: 8px;
+}
+.qm-card-float.qm-c1 { top: 6%; left: -4%; }
+.qm-card-float.qm-c2 { bottom: 10%; right: -6%; }
+.qm-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--qm-ochre); }
+
+@media (prefers-reduced-motion: reduce) {
+  .qm-ring, .qm-eyebrow::before { animation: none; }
+}
+
+/* ---------- MISSION / WHY QUICKMED ---------- */
+.qm-mission {
+  background: var(--qm-teal);
+  color: var(--qm-sand);
+  padding: 90px 5%;
+}
+.qm-mission-inner {
+  max-width: 1000px; margin: 0 auto;
+}
+.qm-mission .qm-eyebrow { color: #B9D9CC; }
+.qm-mission .qm-eyebrow::before { background: var(--qm-ochre); }
+.qm-mission h2 {
+  font-family: 'Fraunces', serif; font-weight: 500;
+  font-size: clamp(28px, 3.2vw, 42px);
+  line-height: 1.25; letter-spacing: -0.5px; margin: 0 0 28px;
+}
+.qm-mission p {
+  font-size: 17px; line-height: 1.8; color: #D9E9E1; max-width: 720px;
+  margin-bottom: 18px;
+}
+.qm-mission .qm-pull {
+  font-family: 'Fraunces', serif; font-style: italic; font-size: 24px;
+  color: #fff; border-left: 3px solid var(--qm-ochre); padding-left: 20px;
+  margin: 34px 0; max-width: 640px; line-height: 1.5;
+}
+
+/* ---------- HOW IT WORKS (real sequence, numbering justified) ---------- */
+.qm-steps { padding: 90px 5%; max-width: 1200px; margin: 0 auto; }
+.qm-steps-head { text-align: center; margin-bottom: 56px; }
+.qm-steps-head h2 {
+  font-family: 'Fraunces', serif; font-weight: 500;
+  font-size: clamp(28px, 3.2vw, 40px); letter-spacing: -0.5px;
+}
+.qm-steps-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+}
+.qm-step {
+  border-top: 3px solid var(--qm-teal);
+  padding-top: 20px;
+}
+.qm-step .num {
+  font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--qm-ochre-deep);
+  font-weight: 700; margin-bottom: 12px;
+}
+.qm-step h3 { font-family: 'Fraunces', serif; font-size: 22px; margin: 0 0 10px; font-weight: 600; }
+.qm-step p { color: var(--qm-muted); line-height: 1.6; font-size: 15px; }
+
+/* ---------- ROLE CARDS ---------- */
+.qm-roles { padding: 20px 5% 30px; max-width: 1200px; margin: 0 auto; }
+.qm-roles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
+.qm-role-card {
+  background: #fff;
+  border: 1px solid var(--qm-line);
+  border-radius: 18px;
+  padding: 32px 28px;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.qm-role-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(23,36,32,0.08); }
+.qm-role-card .icon-wrap {
+  width: 52px; height: 52px; border-radius: 12px;
+  background: var(--qm-sand-dim); display: flex; align-items: center; justify-content: center;
+  font-size: 26px; margin-bottom: 18px;
+}
+.qm-role-card h3 { font-family: 'Fraunces', serif; font-size: 21px; margin: 0 0 8px; }
+.qm-role-card p { color: var(--qm-muted); font-size: 14.5px; line-height: 1.6; margin-bottom: 20px; }
+.qm-role-card a {
+  color: var(--qm-teal); font-weight: 700; font-size: 14.5px; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.qm-role-card a::after { content: '→'; transition: transform .15s ease; }
+.qm-role-card a:hover::after { transform: translateX(4px); }
+
+/* ---------- CONTACT & SUPPORT ---------- */
+.qm-support {
+  padding: 70px 5%;
+  background: var(--qm-sand-dim);
+  border-top: 1px solid var(--qm-line);
+  border-bottom: 1px solid var(--qm-line);
+}
+.qm-support-inner { max-width: 640px; margin: 0 auto; text-align: center; }
+.qm-support h2 {
+  font-family: 'Fraunces', serif; font-weight: 500;
+  font-size: clamp(26px, 3vw, 36px); margin: 6px 0 12px; letter-spacing: -0.5px;
+}
+.qm-support p { color: var(--qm-muted); font-size: 16px; line-height: 1.6; margin-bottom: 28px; }
+.qm-support-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 18px; }
+.qm-btn-whatsapp { background: #25D366; color: #fff; }
+.qm-btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(37,211,102,0.32); }
+.qm-support-meta { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--qm-muted); }
+
+/* ---------- FOOTER / CLOSING SIGNATURE ---------- */
+.qm-footer {
+  background: var(--qm-teal-deep);
+  color: var(--qm-sand);
+  padding: 70px 5% 36px;
+}
+.qm-footer-signature {
+  font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
+  font-size: clamp(22px, 2.6vw, 32px);
+  max-width: 760px; line-height: 1.5; margin-bottom: 50px; color: #F1EAD9;
+}
+.qm-footer-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 16px;
+  border-top: 1px solid rgba(250,246,238,0.15);
+  padding-top: 24px;
+  font-size: 13px; color: #B9CBC2;
+}
+.qm-footer-bottom a { color: #B9CBC2; margin-left: 18px; }
+
+@media (max-width: 900px) {
+  .qm-hero { grid-template-columns: 1fr; padding-top: 48px; }
+  .qm-ripple-stage { max-width: 320px; margin-top: 20px; }
+  .qm-steps-grid, .qm-roles-grid { grid-template-columns: 1fr; }
+  .qm-nav-links a:not(.qm-nav-cta) { display: none; }
+}

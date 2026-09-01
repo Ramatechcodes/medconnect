@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify Email — QuickMed</title>
+<link rel="stylesheet" href="/css/style.css?v=2">
+</head>
+<body>
+  <div class="navbar"><a href="/" class="logo">🩺 QuickMed</a></div>
+
+  <div class="auth-wrap">
+    <div class="card">
+      <h2>Verify your email</h2>
+      <p style="color:#6b7280;font-size:14px">
+        We sent a 6-digit code to your email (or check the server console if
+        SMTP isn't configured). Enter it below to activate your account.
+      </p>
+      <div id="alertBox"></div>
+
+      <form id="verifyForm">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="email" required>
+        </div>
+        <div class="field">
+          <label>6-digit code</label>
+          <input type="text" id="code" maxlength="6" inputmode="numeric" placeholder="123456" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Verify Account</button>
+      </form>
+
+      <p class="muted-link">
+        Didn't get a code? <a href="#" id="resendLink">Resend code</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="/js/api.js?v=2"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const prefillEmail = params.get('email');
+    if (prefillEmail) document.getElementById('email').value = prefillEmail;
+
+    document.getElementById('verifyForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const code = document.getElementById('code').value.trim();
+      try {
+        const data = await apiRequest('/auth/verify-code', { method: 'POST', body: { email, code } });
+        showAlert('alertBox', data.message + ' Redirecting to login...', 'success');
+        setTimeout(() => { window.location.href = '/login.html'; }, 1500);
+      } catch (err) {
+        showAlert('alertBox', err.message);
+      }
+    });
+
+    document.getElementById('resendLink').addEventListener('click', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      if (!email) { showAlert('alertBox', 'Enter your email first.'); return; }
+      try {
+        const data = await apiRequest('/auth/resend-code', { method: 'POST', body: { email } });
+        showAlert('alertBox', data.message, 'success');
+      } catch (err) {
+        showAlert('alertBox', err.message);
+      }
+    });
+  </script>
+</body>
+</html>
