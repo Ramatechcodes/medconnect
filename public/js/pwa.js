@@ -296,46 +296,38 @@ function isFirefox() {
 // ------------------------------------------------------------
 
 function showIOSInstructions() {
-
     alert(
-        '📱 Install QuickMed on iPhone/iPad:\\n\\n' +
-        '1. Tap the Share button in your browser.\\n' +
-        '2. Select "Add to Home Screen".\\n' +
-        '3. Tap "Add".\\n\\n' +
+        '📱 Install QuickMed on iPhone/iPad:\n\n' +
+        '1. Tap the Share button in your browser.\n' +
+        '2. Select "Add to Home Screen".\n' +
+        '3. Tap "Add".\n\n' +
         'QuickMed will then appear on your Home Screen like an app.'
     );
 }
-
 
 // ------------------------------------------------------------
 // FIREFOX INSTRUCTIONS
 // ------------------------------------------------------------
 
 function showFirefoxInstructions() {
-
     alert(
-        '📱 Install QuickMed:\\n\\n' +
-        '1. Open the browser menu (⋮).\\n' +
-        '2. Tap "Install".\\n' +
-        '3. Add QuickMed to your Home Screen.\\n\\n' +
-        'Firefox Android supports installing web apps from its menu.'
+        '📱 Install QuickMed:\n\n' +
+        '1. Open the browser menu (⋮).\n' +
+        '2. Tap "Install".\n' +
+        '3. Add QuickMed to your Home Screen.'
     );
 }
-
-
 // ------------------------------------------------------------
 // GENERIC INSTRUCTIONS
 // ------------------------------------------------------------
 
 function showGenericInstructions() {
-
     alert(
-        '📲 Install QuickMed:\\n\\n' +
-        'Open your browser menu and look for:\\n\\n' +
-        '"Install app"\\n' +
-        '"Add to Home Screen"\\n' +
-        'or\\n' +
+        '📲 Install QuickMed:\n\n' +
+        'Open your browser menu and look for:\n\n' +
+        '"Install app"\n' +
+        '"Add to Home Screen"\n' +
+        'or\n' +
         '"Install QuickMed".'
     );
 }
-
