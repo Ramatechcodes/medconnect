@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "org.getquickmed.twa",
+        "sha256_cert_fingerprints": ["BB:B1:21:56:2C:C1:0A:6B:58:D6:B5:FB:66:FC:78:C4:17:BD:3D:6F:4C:AF:11:F2:C3:67:CB:FE:74:6A:5F:C5"]
+      }
+    }]

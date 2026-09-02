@@ -1,298 +1,167 @@
+// ============================================================
+// QUICKMED PWA INSTALL SYSTEM
+// ============================================================
 
 let deferredPrompt = null;
 let installButton = null;
 let installBanner = null;
+let installBannerText = null;
 let dismissButton = null;
+let apkDownloadBtn = null;
 
-
-
+// ------------------------------------------------------------
+// ELEMENTS
+// ------------------------------------------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
     installButton = document.getElementById('installBtn');
     installBanner = document.getElementById('installBanner');
+    installBannerText = document.getElementById('installBannerText');
     dismissButton = document.getElementById('installDismissBtn');
+    apkDownloadBtn = document.getElementById('apkDownloadBtn');
 
     setupInstallSystem();
+    setupApkButton();
 });
 
+// ------------------------------------------------------------
+// SERVICE WORKER
+// ------------------------------------------------------------
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
         try {
-            const registration = await navigator.serviceWorker.register('/sw.js');
-
-            console.log(
-                '✅ QuickMed Service Worker registered:',
-                registration.scope
-            );
+            const registration = await navigator.serviceWorker.register('/service-worker.js');
+            console.log('✅ QuickMed Service Worker registered:', registration.scope);
         } catch (error) {
-            console.error(
-                '❌ QuickMed Service Worker registration failed:',
-                error
-            );
+            console.error('❌ QuickMed Service Worker registration failed:', error);
         }
     });
 }
 
-
+// ------------------------------------------------------------
+// INSTALL SYSTEM
+// ------------------------------------------------------------
 
 function setupInstallSystem() {
 
-    // If already running as an installed PWA,
-    // don't show the installation banner.
     if (isAppInstalled()) {
         hideInstallBanner();
         console.log('✅ QuickMed is already installed.');
         return;
     }
 
-
-    // --------------------------------------------------------
     // CHROME / EDGE / SAMSUNG / OTHER CHROMIUM BROWSERS
-    // --------------------------------------------------------
-
     window.addEventListener('beforeinstallprompt', (event) => {
-
         console.log('✅ QuickMed installation is available.');
-
-        // Stop browser's default prompt.
         event.preventDefault();
-
-        // Save the installation event.
         deferredPrompt = event;
-
-        // Show OUR install popup immediately.
         showInstallBanner();
-
     });
 
-
-    // --------------------------------------------------------
     // INSTALL BUTTON
-    // --------------------------------------------------------
-
     if (installButton) {
-
         installButton.addEventListener('click', async () => {
 
-            // Chromium installation prompt available
             if (deferredPrompt) {
-
                 try {
-
-                    // Show native browser installation dialog.
                     await deferredPrompt.prompt();
-
                     const result = await deferredPrompt.userChoice;
-
-                    console.log(
-                        'QuickMed installation result:',
-                        result.outcome
-                    );
-
+                    console.log('QuickMed installation result:', result.outcome);
                     if (result.outcome === 'accepted') {
-
-                        console.log(
-                            '✅ User accepted QuickMed installation.'
-                        );
-
+                        console.log('✅ User accepted QuickMed installation.');
                         hideInstallBanner();
-
                     } else {
-
-                        console.log(
-                            'ℹ️ User cancelled QuickMed installation.'
-                        );
-
+                        console.log('ℹ️ User cancelled QuickMed installation.');
                     }
-
                 } catch (error) {
-
-                    console.error(
-                        '❌ Installation prompt error:',
-                        error
-                    );
-
+                    console.error('❌ Installation prompt error:', error);
                 }
-
-                // A BeforeInstallPromptEvent can only be used once.
                 deferredPrompt = null;
-
                 return;
             }
 
-
-            // ------------------------------------------------
-            // iPHONE / iPAD
-            // ------------------------------------------------
-
-            if (isIOS()) {
-
-                showIOSInstructions();
-
-                return;
-            }
-
-
-            // ------------------------------------------------
-            // FIREFOX
-            // ------------------------------------------------
-
-            if (isFirefox()) {
-
-                showFirefoxInstructions();
-
-                return;
-            }
-
-
-            // ------------------------------------------------
-            // OTHER BROWSERS
-            // ------------------------------------------------
-
+            if (isIOS()) { showIOSInstructions(); return; }
+            if (isFirefox()) { showFirefoxInstructions(); return; }
             showGenericInstructions();
-
         });
     }
 
-
-    // --------------------------------------------------------
     // NOT NOW BUTTON
-    // --------------------------------------------------------
-
     if (dismissButton) {
-
         dismissButton.addEventListener('click', () => {
-
             hideInstallBanner();
-
-            // Remember that the user dismissed it.
-            // It will not immediately annoy them again.
-            localStorage.setItem(
-                'quickmed_install_dismissed',
-                Date.now().toString()
-            );
-
+            localStorage.setItem('quickmed_install_dismissed', Date.now().toString());
         });
     }
 
-
-    // --------------------------------------------------------
     // APP INSTALLED EVENT
-    // --------------------------------------------------------
-
     window.addEventListener('appinstalled', () => {
-
         console.log('🎉 QuickMed successfully installed!');
-
         deferredPrompt = null;
-
         hideInstallBanner();
-
-        localStorage.setItem(
-            'quickmed_installed',
-            'true'
-        );
-
+        localStorage.setItem('quickmed_installed', 'true');
+        if (apkDownloadBtn) apkDownloadBtn.style.display = 'none';
     });
 
-
-    // --------------------------------------------------------
-    // SHOW INSTALL POPUP FOR UNSUPPORTED BROWSERS
-    // --------------------------------------------------------
-
+    // Don't wait forever for beforeinstallprompt — show our own banner
+    // as a fallback if the browser hasn't fired it yet (or never will,
+    // e.g. Firefox, Safari).
     setTimeout(() => {
-
-        if (isAppInstalled()) {
-            return;
-        }
-
-        // Don't wait forever for beforeinstallprompt.
-        //
-        // If the browser hasn't provided it yet,
-        // show our own installation information.
+        if (isAppInstalled()) return;
         showInstallBanner();
-
     }, 1200);
 }
 
+// ------------------------------------------------------------
+// APK DOWNLOAD BUTTON (Android only — .apk can't install on iOS/PC)
+// ------------------------------------------------------------
+
+function setupApkButton() {
+    if (!apkDownloadBtn) return;
+    apkDownloadBtn.style.display = (isAndroid() && !isAppInstalled()) ? 'inline-flex' : 'none';
+}
 
 // ------------------------------------------------------------
-// SHOW BANNER
+// SHOW / HIDE BANNER
 // ------------------------------------------------------------
 
 function showInstallBanner() {
-
     if (!installBanner) return;
-
-    if (isAppInstalled()) {
-        return;
-    }
-
+    if (isAppInstalled()) return;
     installBanner.classList.remove('hidden');
 }
 
-
-// ------------------------------------------------------------
-// HIDE BANNER
-// ------------------------------------------------------------
-
 function hideInstallBanner() {
-
     if (!installBanner) return;
-
     installBanner.classList.add('hidden');
 }
 
-
 // ------------------------------------------------------------
-// DETECT INSTALLED PWA
+// PLATFORM DETECTION
 // ------------------------------------------------------------
 
 function isAppInstalled() {
-
-    // Android / Chrome / Edge / desktop
-    const standalone =
-        window.matchMedia('(display-mode: standalone)').matches;
-
-    // iOS Safari
-    const iosStandalone =
-        window.navigator.standalone === true;
-
-    // Our own saved state
-    const savedInstalled =
-        localStorage.getItem('quickmed_installed') === 'true';
-
+    const standalone = window.matchMedia('(display-mode: standalone)').matches;
+    const iosStandalone = window.navigator.standalone === true;
+    const savedInstalled = localStorage.getItem('quickmed_installed') === 'true';
     return standalone || iosStandalone || savedInstalled;
 }
 
-
-// ------------------------------------------------------------
-// iOS DETECTION
-// ------------------------------------------------------------
-
 function isIOS() {
-
-    return /iphone|ipad|ipod/i.test(
-        navigator.userAgent
-    );
+    return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
-
-
-// ------------------------------------------------------------
-// FIREFOX DETECTION
-// ------------------------------------------------------------
 
 function isFirefox() {
-
-    return /firefox/i.test(
-        navigator.userAgent
-    );
+    return /firefox/i.test(navigator.userAgent);
 }
 
+function isAndroid() {
+    return /android/i.test(navigator.userAgent);
+}
 
 // ------------------------------------------------------------
-// iOS INSTRUCTIONS
+// PLATFORM-SPECIFIC INSTRUCTIONS
 // ------------------------------------------------------------
 
 function showIOSInstructions() {
@@ -305,10 +174,6 @@ function showIOSInstructions() {
     );
 }
 
-// ------------------------------------------------------------
-// FIREFOX INSTRUCTIONS
-// ------------------------------------------------------------
-
 function showFirefoxInstructions() {
     alert(
         '📱 Install QuickMed:\n\n' +
@@ -317,9 +182,6 @@ function showFirefoxInstructions() {
         '3. Add QuickMed to your Home Screen.'
     );
 }
-// ------------------------------------------------------------
-// GENERIC INSTRUCTIONS
-// ------------------------------------------------------------
 
 function showGenericInstructions() {
     alert(
