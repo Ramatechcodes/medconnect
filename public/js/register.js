@@ -26,7 +26,7 @@ function updateWhatsappLink() {
   const link = document.getElementById('whatsappVerifyLink');
   if (!link) return;
   const msg = encodeURIComponent(buildWhatsappMessage());
-  link.href = `https://wa.me/2349034689656?text=${msg}`;
+  link.href = `https://wa.me/2347067770651?text=${msg}`;
 }
 
 function resetLicenseVerification() {

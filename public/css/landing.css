@@ -74,7 +74,27 @@
   animation: qm-blink 1.8s ease-in-out infinite;
 }
 @keyframes qm-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.qm-logo-img { height: 28px; width: 28px; vertical-align: middle; margin-right: 6px; border-radius: 6px; }
 
+.qm-nav-consult {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #e6f9ec; color: #16a34a; font-weight: 600;
+  padding: 6px 12px; border-radius: 999px; font-size: 13px;
+}
+
+.qm-btn-whatsapp {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #16a34a; color: #fff;
+}
+.qm-btn-whatsapp:hover { background: #15803d; }
+
+.qm-install-banner {
+  position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+  padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 999; max-width: 92vw;
+}
+.qm-install-banner.hidden { display: none; }
 .qm-hero h1 {
   font-family: 'Fraunces', serif;
   font-weight: 500;
